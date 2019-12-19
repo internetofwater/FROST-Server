@@ -38,8 +38,10 @@ jobs:
     - stage: test
       name: "Maven test"
       script:
-        - mvn test -P owasp
+        - mvn verify -P owasp
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -B; fi'
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
     - stage: deploy
       name: "Deploy Docker"
       script:
