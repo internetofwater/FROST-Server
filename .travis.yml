@@ -2,12 +2,6 @@ language: java
 jdk:
 - openjdk11
 
-branches:
-  only:
-  - master
-  - integrationTests
-  - "/^v[0-9]+(\\.[0-9]+)+/"
-
 install:
   - wget http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O /tmp/helm.tar.gz
   - tar xzf /tmp/helm.tar.gz -C /tmp --strip-components=1
