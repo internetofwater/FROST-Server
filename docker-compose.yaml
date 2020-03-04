@@ -36,3 +36,4 @@ services:
       - chill-import-volume:/data
 volumes:
     postgis_volume:
+    chill-import-volume:
