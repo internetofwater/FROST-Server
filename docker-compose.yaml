@@ -26,5 +26,13 @@ services:
       - POSTGRES_PASSWORD=ChangeMe
     volumes:
       - postgis_volume:/var/lib/postgresql/data
+  chill-import:
+    image: fraunhoferiosb/chillimport:latest
+    ports:
+            - "8000:8000"
+    environment:
+        - configPath="/data"
+    volumes:
+      - chill-import-volume:/data
 volumes:
     postgis_volume:
