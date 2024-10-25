@@ -200,8 +200,10 @@ spec:
             - name: plugins_providedPlugins
               value: "{{ .Values.frost.plugins.providedPlugins }}"
             {{- end }}
+            {{- if .Values.frost.plugins.plugins }}
             - name: plugins_plugins
               value: "{{ .Values.frost.plugins.plugins }}"
+            {{- end }}
 
             # Actuation Plugin settings
             {{- if .Values.frost.plugins.actuation.enable }}
