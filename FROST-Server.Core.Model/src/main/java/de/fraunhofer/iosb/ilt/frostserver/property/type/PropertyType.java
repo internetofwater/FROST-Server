@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import de.fraunhofer.iosb.ilt.frostserver.model.core.annotations.Annotatable;
 import de.fraunhofer.iosb.ilt.frostserver.model.core.annotations.Annotation;
+import de.fraunhofer.iosb.ilt.frostserver.util.Constants;
 import de.fraunhofer.iosb.ilt.frostserver.util.ParserUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class PropertyType implements Annotatable {
 
     private final String name;
     private final String description;
+    private String mediaType = Constants.CONTENT_TYPE_TEXT_PLAIN;
     private JsonDeserializer deserializer;
     private JsonSerializer serializer;
     private final List<Annotation> annotations = new ArrayList<>();
@@ -61,6 +63,15 @@ public class PropertyType implements Annotatable {
 
     public PropertyType setDeserializer(JsonDeserializer deserializer) {
         this.deserializer = deserializer;
+        return this;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public PropertyType setMediaType(String mediaType) {
+        this.mediaType = mediaType;
         return this;
     }
 

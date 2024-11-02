@@ -26,6 +26,8 @@ import de.fraunhofer.iosb.ilt.frostserver.plugin.odata.PluginOData;
 import de.fraunhofer.iosb.ilt.frostserver.property.EntityPropertyMain;
 import de.fraunhofer.iosb.ilt.frostserver.property.NavigationProperty;
 import de.fraunhofer.iosb.ilt.frostserver.property.Property;
+import de.fraunhofer.iosb.ilt.frostserver.property.type.PropertyType;
+import de.fraunhofer.iosb.ilt.frostserver.util.Constants;
 import de.fraunhofer.iosb.ilt.frostserver.util.user.PrincipalExtended;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -334,6 +336,48 @@ public class OpenApiGenerator {
         return oaPath;
     }
 
+    private static OAResponse createEntityPropertyGet200Response(GeneratorContext context, Property property) {
+        OAComponents components = context.getDocument().getComponents();
+        final PropertyType propertyType = property.getType();
+        final String schemaName = property.getJsonName() + "-" + propertyType.getName();
+        String name = schemaName + "-get-200";
+        if (!context.getResponseTargets().containsKey(name)) {
+            if (!components.hasSchema(schemaName)) {
+                createPropertySchema(context, property);
+            }
+            OAResponse resp = new OAResponse();
+            OAMediaType jsonType = new OAMediaType(new OASchema(PATH_COMPONENTS_SCHEMAS + schemaName));
+            resp.addContent(CONTENT_TYPE_APPLICATION_JSON, jsonType);
+            resp.setDescription("A single entityProperty with name " + property.getJsonName() + " of type " + propertyType.getName());
+            context.getDocument().getComponents().addResponse(name, resp);
+
+            OAResponse ref = new OAResponse();
+            ref.setRef(PATH_COMPONENTS_RESPONSES + name);
+            context.getResponseTargets().put(name, ref);
+        }
+        return context.getResponseTargets().get(name);
+
+    }
+
+    private static OAResponse createPropertyValueGet200Response(GeneratorContext context, PropertyType propertyType) {
+        final String schemaName = propertyType.getName();
+        String name = schemaName + "-get-200";
+        if (!context.getResponseTargets().containsKey(name)) {
+            OAResponse resp = new OAResponse();
+            OASchema typeSchema = new OASchema(context.getVersion(), propertyType);
+            OAMediaType jsonType = new OAMediaType(typeSchema);
+            resp.addContent(Constants.CONTENT_TYPE_TEXT_PLAIN, jsonType);
+            resp.setDescription("Plain contents of a property of type " + propertyType.getName());
+            context.getDocument().getComponents().addResponse(name, resp);
+
+            OAResponse ref = new OAResponse();
+            ref.setRef(PATH_COMPONENTS_RESPONSES + name);
+            context.getResponseTargets().put(name, ref);
+        }
+        return context.getResponseTargets().get(name);
+
+    }
+
     private static OAResponse createEntityGet200Response(GeneratorContext context, EntityType entityType) {
         OAComponents components = context.getDocument().getComponents();
         String name = entityType.entityName + "-get-200";
@@ -437,6 +481,31 @@ public class OpenApiGenerator {
         }
     }
 
+    private static void createPropertySchema(GeneratorContext context, Property property) {
+        final Version version = context.getVersion();
+        final OAComponents components = context.getDocument().getComponents();
+        final String schemaName = property.getJsonName() + "-" + property.getType().getName();
+        final OASchema schema = new OASchema(OASchema.Type.OBJECT, null);
+        components.addSchema(schemaName, schema);
+
+        String propertyName = property.getJsonName();
+        if (property instanceof EntityPropertyMain<?> epm) {
+            if (epm.getAliases().contains("@iot.id")) {
+                propertyName = version.getIdName();
+            }
+
+            OASchema propSchema;
+            if (ModelRegistry.EP_PROPERTIES.equals(epm)) {
+                propSchema = new OASchema("#/components/schemas/properties");
+            } else if (ModelRegistry.EP_SELFLINK.equals(epm)) {
+                propSchema = new OASchema("#/components/schemas/selfLink");
+            } else {
+                propSchema = new OASchema(context.getVersion(), epm.getType());
+            }
+            schema.addProperty(propertyName, propSchema);
+        }
+    }
+
     private static void addPathsForSet(GeneratorContext context, OADoc document, int level, Map<String, OAPath> paths, String base, EntityType entityType, String setName, GeneratorContext options) {
         String path = base + "/" + setName;
         OAPath pathCollection = createPathForSet(options, path, entityType, level > 0);
@@ -477,15 +546,25 @@ public class OpenApiGenerator {
         }
     }
 
-    private static void addPathsForEntityProperties(EntityType entityType, Map<String, OAPath> paths, String base, GeneratorContext options) {
+    private static void addPathsForEntityProperties(EntityType entityType, Map<String, OAPath> paths, String base, GeneratorContext context) {
         for (Property entityProperty : entityType.getPropertySet()) {
-            if (!(entityProperty instanceof NavigationProperty)) {
-                OAPath pathProperty = new OAPath();
-                pathProperty.addParameter(new OAParameter(PARAM_ENTITY_ID));
+            if (entityProperty instanceof NavigationProperty) {
+                // Ignore NavProps here
+            } else if (ModelRegistry.EP_SELFLINK.equals(entityProperty)) {
+                // Ignore SelfLinks here
+            } else {
+                OAPath pathProperty = new OAPath()
+                        .addParameter(new OAParameter(PARAM_ENTITY_ID))
+                        .setGet(new OAOperation()
+                                .addResponse("200", createEntityPropertyGet200Response(context, entityProperty)));
 
                 paths.put(base + "/" + entityProperty.getName(), pathProperty);
-                if (options.isAddValue()) {
-                    paths.put(base + "/" + entityProperty.getName() + "/$value", pathProperty);
+                if (context.isAddValue()) {
+                    OAPath pathPropertyValue = new OAPath()
+                            .addParameter(new OAParameter(PARAM_ENTITY_ID))
+                            .setGet(new OAOperation()
+                                    .addResponse("200", createPropertyValueGet200Response(context, entityProperty.getType())));
+                    paths.put(base + "/" + entityProperty.getName() + "/$value", pathPropertyValue);
                 }
             }
         }

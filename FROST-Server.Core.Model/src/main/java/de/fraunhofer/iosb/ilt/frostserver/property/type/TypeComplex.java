@@ -31,6 +31,7 @@ import de.fraunhofer.iosb.ilt.frostserver.model.ext.TimeValue;
 import de.fraunhofer.iosb.ilt.frostserver.model.ext.TypeReferencesHelper;
 import de.fraunhofer.iosb.ilt.frostserver.property.EntityPropertyMain;
 import de.fraunhofer.iosb.ilt.frostserver.property.Property;
+import de.fraunhofer.iosb.ilt.frostserver.util.Constants;
 import de.fraunhofer.iosb.ilt.frostserver.util.ParserUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -124,18 +125,21 @@ public class TypeComplex extends PropertyType {
     public TypeComplex(String name, String description, boolean openType) {
         super(name, description, null, null);
         this.openType = openType;
+        setMediaType(Constants.CONTENT_TYPE_APPLICATION_JSON);
     }
 
     public TypeComplex(String name, String description, boolean openType, Instantiator instantiator, TypeReference tr) {
         super(name, description, ParserUtils.getDefaultDeserializer(tr), null);
         this.openType = openType;
         this.instantiator = instantiator;
+        setMediaType(Constants.CONTENT_TYPE_APPLICATION_JSON);
     }
 
     public TypeComplex(String name, String description, boolean openType, Instantiator instantiator, JsonDeserializer jd, JsonSerializer js) {
         super(name, description, jd, js);
         this.openType = openType;
         this.instantiator = instantiator;
+        setMediaType(Constants.CONTENT_TYPE_APPLICATION_JSON);
     }
 
     public boolean isOpenType() {

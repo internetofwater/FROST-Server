@@ -157,4 +157,10 @@ public class TypeSimplePrimitive extends TypeSimple {
         super(name, description, deserializer, parser);
     }
 
+    @Override
+    public TypeSimplePrimitive setMediaType(String mediaType) {
+        super.setMediaType(mediaType);
+        return this;
+    }
+
 }

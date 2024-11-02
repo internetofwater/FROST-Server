@@ -16,8 +16,12 @@
     <logger name="de.fraunhofer.iosb.ilt.frostserver.persistence.pgjooq.utils.validator" level="INFO"/>
     <logger name="de.fraunhofer.iosb.ilt.frostserver.service.Service" level="INFO"/>
 
+    <logger name="de.fraunhofer.iosb.ilt.frostclient.SensorThingsService" level="WARN"/>
+    <logger name="de.fraunhofer.iosb.ilt.frostclient.settings" level="WARN"/>
+
     <logger name="de.fraunhofer.iosb.ilt.statests" level="INFO"/>
     <logger name="de.fraunhofer.iosb.ilt.statests.util.mqtt.MqttListener" level="INFO"/>
+    <logger name="de.fraunhofer.iosb.ilt.statests.util.mqtt.MqttHelper2" level="INFO"/>
     
     <logger name="de.fraunhofer.iosb.ilt.statests.f01auth.FineGrainedAuthTests" level="INFO"/>
 
