@@ -49,6 +49,7 @@ import de.fraunhofer.iosb.ilt.statests.util.model.EntityType;
 import de.fraunhofer.iosb.ilt.statests.util.model.Expand;
 import de.fraunhofer.iosb.ilt.statests.util.model.PathElement;
 import de.fraunhofer.iosb.ilt.statests.util.model.Query;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -523,22 +524,38 @@ public class EntityUtils {
         filterForException(user, service.dao(type), filter, expectedCode);
     }
 
-    public static void filterForException(Dao doa, String filter, int... expectedCode) {
-        filterForException("-", doa, filter, expectedCode);
+    public static void filterForException(Dao dao, String filter, int... expectedCode) {
+        filterForException("-", dao, filter, expectedCode);
     }
 
-    public static void filterForException(String user, Dao doa, String filter, int... expectedCode) {
+    public static void filterForException(String user, Dao dao, String filter, int... expectedCode) {
         try {
-            doa.query().filter(filter).list();
+            dao.query().filter(filter).list();
         } catch (StatusCodeException e) {
-            String message = "User " + user + ", Filter " + filter + " did not respond with one of " + Arrays.toString(expectedCode) + ", but with " + e.getStatusCode() + ".";
+            final int getStatusCode = e.getStatusCode();
+            testHeadRequest(dao.getService(), e.getUrl(), getStatusCode, user, filter);
+            String message = "User " + user + ", Filter " + filter + " did not respond with one of " + Arrays.toString(expectedCode) + ", but with " + getStatusCode + ".";
             AuthTestHelper.expectStatusCodeException(message, e, expectedCode);
             return;
         } catch (ServiceFailureException ex) {
             LOGGER.error("Exception:", ex);
-            fail("Failed to call service for filter User " + user + ", " + filter + " " + ex);
+            fail("Failed to call service for filter User " + user + ", " + filter + " ", ex);
         }
         fail("User " + user + ", Filter " + filter + " did not respond with " + Arrays.toString(expectedCode) + ".");
+    }
+
+    public static void testHeadRequest(SensorThingsService service, String url, final int getStatusCode, String user, String filter) {
+        HTTPMethods.HttpResponse headResponse;
+        try {
+            headResponse = HTTPMethods.doHead(service, url);
+            if (headResponse.code != getStatusCode) {
+                LOGGER.error("Different status code for GET ({}) and HEAD ({})", getStatusCode, headResponse.code);
+                fail("Different status code for GET (" + getStatusCode + ") and HEAD (" + headResponse.code + ")");
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Exception:", ex);
+            fail("Failed to call service for filter User " + user + ", " + filter + " " + ex);
+        }
     }
 
     public static Entity createSensor(SensorThingsService srvc, String name, String desc, String type, String metadata, List<Entity> registry) throws ServiceFailureException {

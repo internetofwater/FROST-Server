@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import de.fraunhofer.iosb.ilt.frostclient.SensorThingsService;
 import de.fraunhofer.iosb.ilt.frostclient.exception.ServiceFailureException;
+import de.fraunhofer.iosb.ilt.frostclient.exception.StatusCodeException;
 import de.fraunhofer.iosb.ilt.frostclient.model.Entity;
 import de.fraunhofer.iosb.ilt.statests.AbstractTestClass;
 import de.fraunhofer.iosb.ilt.statests.ServerVersion;
@@ -329,8 +330,11 @@ public abstract class AbstractAuthTests extends AbstractTestClass {
             try {
                 serviceAnon.dao(sMdl.etThing).query().list();
                 fail(ANON_SHOULD_NOT_BE_ABLE_TO_READ);
+            } catch (StatusCodeException ex) {
+                EntityUtils.testHeadRequest(serviceAnon, ex.getUrl(), ex.getStatusCode(), "Anon", "");
+                AuthTestHelper.expectStatusCodeException(ANON_SHOULD_NOT_BE_ABLE_TO_READ, ex, HTTP_CODE_401_UNAUTHORIZED, HTTP_CODE_403_FORBIDDEN);
             } catch (ServiceFailureException ex) {
-                ath.expectStatusCodeException(ANON_SHOULD_NOT_BE_ABLE_TO_READ, ex, HTTP_CODE_401_UNAUTHORIZED, HTTP_CODE_403_FORBIDDEN);
+                fail("Failed to fetch things for user anonymous ", ex);
             }
         }
     }

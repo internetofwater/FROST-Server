@@ -36,6 +36,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -156,6 +157,16 @@ public class HTTPMethods {
             } else {
                 result.setResponse("");
             }
+            return result;
+        }
+    }
+
+    public static HttpResponse doHead(final SensorThingsService service, String urlString) throws IOException {
+        LOGGER.debug("Heading: {}", urlString);
+        countGet++;
+        HttpHead request = new HttpHead(urlString);
+        try (CloseableHttpResponse response = service.execute(request)) {
+            HttpResponse result = new HttpResponse(response.getStatusLine().getStatusCode());
             return result;
         }
     }

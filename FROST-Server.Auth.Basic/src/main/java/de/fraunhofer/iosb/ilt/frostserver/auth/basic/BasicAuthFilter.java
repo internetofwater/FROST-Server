@@ -115,11 +115,12 @@ public class BasicAuthFilter implements Filter {
 
         final AuthChecker allAllowed = (userData, response) -> true;
         methodCheckers.put(HttpMethod.OPTIONS, allAllowed);
-        methodCheckers.put(HttpMethod.HEAD, allAllowed);
 
         if (allowAnonymous) {
+            methodCheckers.put(HttpMethod.HEAD, allAllowed);
             methodCheckers.put(HttpMethod.GET, allAllowed);
         } else {
+            methodCheckers.put(HttpMethod.HEAD, (userData, response) -> requireRole(roleGet, userData, response));
             methodCheckers.put(HttpMethod.GET, (userData, response) -> requireRole(roleGet, userData, response));
         }
 

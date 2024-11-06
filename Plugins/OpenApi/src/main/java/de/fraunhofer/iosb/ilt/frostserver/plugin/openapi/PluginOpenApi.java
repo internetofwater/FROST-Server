@@ -18,6 +18,7 @@
 package de.fraunhofer.iosb.ilt.frostserver.plugin.openapi;
 
 import static de.fraunhofer.iosb.ilt.frostserver.util.HttpMethod.GET;
+import static de.fraunhofer.iosb.ilt.frostserver.util.HttpMethod.HEAD;
 
 import de.fraunhofer.iosb.ilt.frostserver.path.Version;
 import de.fraunhofer.iosb.ilt.frostserver.plugin.odata.PluginOData;
@@ -95,7 +96,7 @@ public class PluginOpenApi implements PluginService, PluginRootDocument, ConfigD
 
     @Override
     public String getRequestTypeFor(Version version, String path, HttpMethod method, String contentType) {
-        if (GET.equals(method) && path.equals(ServiceOpenApi.PATH_GET_OPENAPI_SPEC)) {
+        if ((GET == method || HEAD == method) && path.equals(ServiceOpenApi.PATH_GET_OPENAPI_SPEC)) {
             return ServiceOpenApi.REQUEST_TYPE_GET_OPENAPI_SPEC;
         }
         throw new IllegalArgumentException("Method " + method + "not valid for path " + path);

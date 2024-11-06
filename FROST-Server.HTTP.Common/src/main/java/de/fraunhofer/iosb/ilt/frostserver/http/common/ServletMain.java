@@ -132,6 +132,11 @@ public class ServletMain extends HttpServlet {
     }
 
     @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doHead(req, resp);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         processRequest(request, response);
     }

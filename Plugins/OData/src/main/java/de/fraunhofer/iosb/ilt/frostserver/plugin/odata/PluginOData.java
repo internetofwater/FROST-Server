@@ -157,6 +157,7 @@ public class PluginOData implements PluginService, ConfigDefaults {
             case DELETE:
                 return RequestTypeUtils.DELETE;
 
+            case HEAD:
             case GET:
                 if (path.isEmpty() || "/".equals(path)) {
                     return RequestTypeUtils.GET_CAPABILITIES;

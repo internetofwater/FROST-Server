@@ -113,13 +113,11 @@ public class KeycloakFilter implements Filter {
                     return Role.DELETE;
 
                 case GET:
+                case HEAD:
                     if (anonRead) {
                         return Role.NONE;
                     }
                     return Role.READ;
-
-                case HEAD:
-                    return Role.NONE;
 
                 case PATCH:
                     return Role.UPDATE;
