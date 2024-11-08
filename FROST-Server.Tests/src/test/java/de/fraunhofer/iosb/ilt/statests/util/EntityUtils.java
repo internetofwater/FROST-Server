@@ -549,8 +549,8 @@ public class EntityUtils {
         try {
             headResponse = HTTPMethods.doHead(service, url);
             if (headResponse.code != getStatusCode) {
-                LOGGER.error("Different status code for GET ({}) and HEAD ({})", getStatusCode, headResponse.code);
-                fail("Different status code for GET (" + getStatusCode + ") and HEAD (" + headResponse.code + ")");
+                LOGGER.error("Different status code for GET ({}) and HEAD ({}) on {}", getStatusCode, headResponse.code, url);
+                fail("Different status code for GET (" + getStatusCode + ") and HEAD (" + headResponse.code + ") on " + url);
             }
         } catch (IOException ex) {
             LOGGER.error("Exception:", ex);

@@ -32,6 +32,7 @@ import de.fraunhofer.iosb.ilt.frostserver.settings.ConfigProvider;
 import de.fraunhofer.iosb.ilt.frostserver.settings.CoreSettings;
 import de.fraunhofer.iosb.ilt.frostserver.settings.annotation.DefaultValue;
 import de.fraunhofer.iosb.ilt.frostserver.settings.annotation.DefaultValueBoolean;
+import de.fraunhofer.iosb.ilt.frostserver.util.HttpMethod;
 import de.fraunhofer.iosb.ilt.frostserver.util.StringHelper;
 import de.fraunhofer.iosb.ilt.frostserver.util.user.PrincipalExtended;
 import jakarta.servlet.http.HttpServletRequest;
@@ -137,8 +138,9 @@ public class HttpRequestDecoder extends ConfigProvider<HttpRequestDecoder> {
             return null;
         }
 
-        final String method = request.getMethod();
-        String requestType = PluginManager.decodeRequestType(plugin, version, path, method, request.getContentType());
+        final HttpMethod method = HttpMethod.fromString(request.getMethod());
+        final String requestType = PluginManager.decodeRequestType(plugin, version, path, method, request.getContentType());
+        final boolean head = method == HttpMethod.HEAD;
 
         final Map<String, List<String>> parameterMap = UrlHelper.splitQuery(request.getQueryString());
         decodeAccepHeader(request, parameterMap);
@@ -149,6 +151,7 @@ public class HttpRequestDecoder extends ConfigProvider<HttpRequestDecoder> {
                 .setQueryDefaults(queryDefaults)
                 .setVersion(version)
                 .setRequestType(requestType)
+                .setHead(head)
                 .setUrlPath(path)
                 .setUrlQuery(request.getQueryString() != null
                         ? StringHelper.urlDecode(request.getQueryString())

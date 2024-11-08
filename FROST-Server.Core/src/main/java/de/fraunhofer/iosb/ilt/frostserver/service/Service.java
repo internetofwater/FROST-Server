@@ -382,6 +382,14 @@ public class Service implements AutoCloseable {
             return errorResponse(response, version.getCannedResponse(Version.CannedResponseType.NOTHING_FOUND));
         }
         try {
+            if (request.isHead()) {
+                // Execute the query to check if it works. Doesn't actually fetch data.
+                query.setTop(0);
+                pm.get(path, query);
+                response.setMessage("");
+                response.setCode(200);
+                return response;
+            }
             Object object = pm.get(path, query);
             if (object == null) {
                 if (path.isValue() || path.isEntityProperty()) {

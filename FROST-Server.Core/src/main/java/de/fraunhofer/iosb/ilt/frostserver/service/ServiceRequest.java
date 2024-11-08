@@ -48,6 +48,7 @@ public class ServiceRequest {
     private static final ThreadLocal<ServiceRequest> LOCAL_REQUEST = new ThreadLocal<>();
 
     private String requestType;
+    private boolean head;
     private String urlPath;
     private String urlQuery;
     private String contentString;
@@ -94,6 +95,21 @@ public class ServiceRequest {
 
     public ServiceRequest setRequestType(String requestType) {
         this.requestType = requestType;
+        return this;
+    }
+
+    /**
+     * Indicates the read request is a HEAD request and does not expect data in
+     * the response.
+     *
+     * @return true if it is a HEAD request.
+     */
+    public boolean isHead() {
+        return head;
+    }
+
+    public ServiceRequest setHead(boolean head) {
+        this.head = head;
         return this;
     }
 
