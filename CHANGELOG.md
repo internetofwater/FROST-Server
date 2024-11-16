@@ -24,6 +24,7 @@ FROST-Server version 2.5 and higher requires Java 21. This is because some libra
 * Fixed the resolving of references in the URL of json batch requests.
 * Fixed differences in HTTP response code between GET and HEAD requests.
 * Fixed json batch requests without atomicity group all running in the same group.
+* Avoid use of UPDATE ... RETURNING ... on MariaDB.
 
 
 ## Release version 2.4.0
