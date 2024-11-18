@@ -12,27 +12,22 @@ updates:
           - "*"
 
   
-  # Maintain dependencies for Maven in the v2.4.x branch
+  # Maintain dependencies for Maven in the v2.5.x branch
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: v2.4.x
+    target-branch: v2.5.x
     schedule:
       interval: "weekly"
     groups:
       dependencies:
         patterns:
           - "*"
-    ignore:
-      - dependency-name: "org.eclipse.jetty:jetty-servlet"
-        versions: ["[10,)"]
-      - dependency-name: "org.openjfx:*"
-        versions: ["[22,)"]
 
-
-  # Maintain dependencies for Maven in the v2.3.x branch
+  
+  # Maintain dependencies for Maven in the v2.4.x branch
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: v2.3.x
+    target-branch: v2.4.x
     schedule:
       interval: "weekly"
     groups:
