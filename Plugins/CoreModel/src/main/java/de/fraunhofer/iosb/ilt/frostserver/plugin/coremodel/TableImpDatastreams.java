@@ -351,7 +351,7 @@ public class TableImpDatastreams extends StaTableAbstract<TableImpDatastreams> {
     }
 
     protected PropertyFields<TableImpDatastreams> propertyFieldForUoM(final Field field, final EntityPropertyCustomSelect epCustomSelect) {
-        PropertyFields<TableImpDatastreams> pfs = new PropertyFields<>(
+        PropertyFields<TableImpDatastreams> pfs = new PropertyFields<TableImpDatastreams>(
                 epCustomSelect,
                 new ConverterRecordDeflt<>(
                         (tbl, tuple, entity, dataSize) -> {

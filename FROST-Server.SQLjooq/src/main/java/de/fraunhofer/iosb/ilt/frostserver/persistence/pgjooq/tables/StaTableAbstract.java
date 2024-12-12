@@ -594,7 +594,7 @@ public abstract class StaTableAbstract<T extends StaMainTable<T>> extends TableI
 
     protected PropertyFields<T> propertyFieldForJsonField(final JsonFieldWrapper jsonFactory, final EntityPropertyCustomSelect epCustomSelect) {
         final Field<Object> deepField = jsonFactory.materialise().getJsonExpression();
-        PropertyFields<T> pfs = new PropertyFields<>(
+        PropertyFields<T> pfs = new PropertyFields<T>(
                 epCustomSelect,
                 new PropertyFieldRegistry.ConverterRecordDeflt<>(
                         (tbl, tuple, entity, dataSize) -> {
@@ -608,7 +608,7 @@ public abstract class StaTableAbstract<T extends StaMainTable<T>> extends TableI
     }
 
     protected PropertyFields<T> propertyFieldForCustom(final Field field, final EntityPropertyCustomSelect epCustomSelect) {
-        PropertyFields<T> pfs = new PropertyFields<>(
+        PropertyFields<T> pfs = new PropertyFields<T>(
                 epCustomSelect,
                 new PropertyFieldRegistry.ConverterRecordDeflt<>(
                         (tbl, tuple, entity, dataSize) -> epCustomSelect.setOn(entity, tuple.get(field)),

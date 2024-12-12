@@ -75,18 +75,18 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
      */
     private final List<PropertyFields<T>> allSelectPropertyFields;
 
-    public static interface ExpressionFactory<T> {
+    public static interface ExpressionFactory<U extends StaMainTable<U>> {
 
-        public Field get(T table);
+        public Field get(U table);
     }
 
     /**
      * Convert the given Record, holding data from the given Table, into the
      * given Entity.
      *
-     * @param <T> The table type.
+     * @param <U> The table type.
      */
-    public static interface ConverterRecordRead<T> {
+    public static interface ConverterRecordRead<U extends StaMainTable<U>> {
 
         /**
          * Convert the given Record, holding data from the given Table, into the
@@ -98,24 +98,24 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
          * @param entity The entity to write the data to.
          * @param dataSize The DataSize to use to register the amount of data.
          */
-        public void convert(T table, Record input, Entity entity, DataSize dataSize);
+        public void convert(U table, Record input, Entity entity, DataSize dataSize);
     }
 
-    public static interface ConverterRecordInsert<T> {
+    public static interface ConverterRecordInsert<U extends StaMainTable<U>> {
 
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields);
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields);
     }
 
-    public static interface ConverterRecordUpdate<T> {
+    public static interface ConverterRecordUpdate<U extends StaMainTable<U>> {
 
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message);
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message);
     }
 
-    public static interface ConverterRecord<T> extends ConverterRecordRead<T>, ConverterRecordInsert<T>, ConverterRecordUpdate<T> {
+    public static interface ConverterRecord<U extends StaMainTable<U>> extends ConverterRecordRead<U>, ConverterRecordInsert<U>, ConverterRecordUpdate<U> {
         // No own methods.
     }
 
-    public static class ConverterRecordDeflt<T> implements ConverterRecord<T> {
+    public static class ConverterRecordDeflt<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private static final ConverterRecordInsert NULL_INSERT = (table, entity, insertFields) -> {
             // Does nothing
@@ -123,51 +123,51 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         private static final ConverterRecordUpdate NULL_UPDATE = (table, entity, updateFields, message) -> {
             // Does nothing
         };
-        private final ConverterRecordRead<T> read;
-        private final ConverterRecordInsert<T> insert;
-        private final ConverterRecordUpdate<T> update;
+        private final ConverterRecordRead<U> read;
+        private final ConverterRecordInsert<U> insert;
+        private final ConverterRecordUpdate<U> update;
 
-        public ConverterRecordDeflt(ConverterRecordRead<T> read, ConverterRecordInsert<T> insert, ConverterRecordUpdate<T> update) {
+        public ConverterRecordDeflt(ConverterRecordRead<U> read, ConverterRecordInsert<U> insert, ConverterRecordUpdate<U> update) {
             this.read = read;
             this.insert = (insert == null) ? NULL_INSERT : insert;
             this.update = (update == null) ? NULL_UPDATE : update;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             read.convert(table, input, entity, dataSize);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             insert.convert(table, entity, insertFields);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             update.convert(table, entity, updateFields, message);
         }
 
     }
 
-    public static class PropertyFields<T> {
+    public static class PropertyFields<U extends StaMainTable<U>> {
 
         public final Property property;
         public final boolean jsonType;
-        public final Map<String, ExpressionFactory<T>> fields = new LinkedHashMap<>();
-        public final ConverterRecord<T> converter;
+        public final Map<String, ExpressionFactory<U>> fields = new LinkedHashMap<>();
+        public final ConverterRecord<U> converter;
 
-        public PropertyFields(Property property, ConverterRecord<T> converter) {
+        public PropertyFields(Property property, ConverterRecord<U> converter) {
             this(property, false, converter);
         }
 
-        public PropertyFields(Property property, boolean jsonType, ConverterRecord<T> converter) {
+        public PropertyFields(Property property, boolean jsonType, ConverterRecord<U> converter) {
             this.property = property;
             this.converter = converter;
             this.jsonType = jsonType;
         }
 
-        public PropertyFields<T> addField(String name, ExpressionFactory<T> field) {
+        public PropertyFields<U> addField(String name, ExpressionFactory<U> field) {
             String key = name;
             if (key == null) {
                 key = Integer.toString(fields.size());
@@ -183,12 +183,12 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
 
     }
 
-    public static class PropertyFactoryCombo<T> {
+    public static class PropertyFactoryCombo<U extends StaMainTable<U>> {
 
         public final Property property;
-        public final ExpressionFactory<T> factory;
+        public final ExpressionFactory<U> factory;
 
-        public PropertyFactoryCombo(Property property, ExpressionFactory<T> factory) {
+        public PropertyFactoryCombo(Property property, ExpressionFactory<U> factory) {
             this.property = property;
             this.factory = factory;
         }
@@ -198,14 +198,14 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
     /**
      * A NameFactoryPair for easier passing of a name and a factory.
      *
-     * @param <T> the table type this NFP fetches from.
+     * @param <U> the table type this NFP fetches from.
      */
-    public static class NFP<T> {
+    public static class NFP<U extends StaMainTable<U>> {
 
         public final String name;
-        public final ExpressionFactory<T> factory;
+        public final ExpressionFactory<U> factory;
 
-        public NFP(String name, ExpressionFactory<T> factory) {
+        public NFP(String name, ExpressionFactory<U> factory) {
             this.name = name;
             this.factory = factory;
         }
@@ -231,7 +231,8 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
      * select clause of a query.
      *
      * @param <C> The type of collection given as a target.
-     * @param target The list to add to. If null a new ArrayList will be created.
+     * @param target The list to add to. If null a new ArrayList will be
+     * created.
      * @return The target list, or a new list if target was null.
      */
     public <C extends Collection<PropertyFields<T>>> C getSelectFields(C target) {
@@ -330,7 +331,7 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
     }
 
     public void addEntry(NavigationPropertyEntitySet property, ExpressionFactory<T> factory) {
-        PropertyFields<T> pf = new PropertyFields<>(property, new ConverterEntitySet<>());
+        PropertyFields<T> pf = new PropertyFields<T>(property, new ConverterEntitySet<>());
         pf.addField(null, factory);
         epMapSelect.put(property, pf);
         allSelectPropertyFields.add(pf);
@@ -447,18 +448,18 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         coreMap.put(key, factory);
     }
 
-    public static class ConverterSimple<T> implements ConverterRecord<T> {
+    public static class ConverterSimple<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
         private final boolean canCreate;
         private final boolean canUpdate;
 
-        public ConverterSimple(Property property, ExpressionFactory<T> factory) {
+        public ConverterSimple(Property property, ExpressionFactory<U> factory) {
             this(property, factory, true, true);
         }
 
-        public ConverterSimple(Property property, ExpressionFactory<T> factory, boolean canCreate, boolean canUpdate) {
+        public ConverterSimple(Property property, ExpressionFactory<U> factory, boolean canCreate, boolean canUpdate) {
             this.property = property;
             this.factory = factory;
             this.canCreate = canCreate;
@@ -466,19 +467,19 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             entity.setProperty(property, input.get(factory.get(table)));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             if (canCreate) {
                 insertFields.put(factory.get(table), entity.getProperty(property));
             }
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             if (canUpdate) {
                 updateFields.put(factory.get(table), entity.getProperty(property));
                 message.addField(property);
@@ -486,54 +487,54 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
     }
 
-    public static class ConverterString<T> implements ConverterRecord<T> {
+    public static class ConverterString<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
 
-        public ConverterString(Property property, ExpressionFactory<T> factory) {
+        public ConverterString(Property property, ExpressionFactory<U> factory) {
             this.property = property;
             this.factory = factory;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             String data = (String) input.get(factory.get(table));
             dataSize.increase(data == null ? 0 : data.length());
             entity.setProperty(property, data);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             insertFields.put(factory.get(table), entity.getProperty(property));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             updateFields.put(factory.get(table), entity.getProperty(property));
             message.addField(property);
         }
     }
 
-    public static class ConverterPassword<T> implements ConverterRecord<T> {
+    public static class ConverterPassword<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final boolean plainTextPassword;
         private final Property property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
 
-        public ConverterPassword(boolean plainTextPassword, Property property, ExpressionFactory<T> factory) {
+        public ConverterPassword(boolean plainTextPassword, Property property, ExpressionFactory<U> factory) {
             this.plainTextPassword = plainTextPassword;
             this.property = property;
             this.factory = factory;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             // Passwords can not be read.
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             if (plainTextPassword) {
                 insertFields.put(factory.get(table), entity.getProperty(property));
             } else {
@@ -543,7 +544,7 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             if (plainTextPassword) {
                 updateFields.put(factory.get(table), entity.getProperty(property));
             } else {
@@ -555,84 +556,84 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
     }
 
-    public static class ConverterTimeInterval<T> implements ConverterRecord<T> {
+    public static class ConverterTimeInterval<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property<TimeInterval> property;
-        private final ExpressionFactory<T> factoryStart;
-        private final ExpressionFactory<T> factoryEnd;
+        private final ExpressionFactory<U> factoryStart;
+        private final ExpressionFactory<U> factoryEnd;
 
-        public ConverterTimeInterval(Property<TimeInterval> property, ExpressionFactory<T> factoryStart, ExpressionFactory<T> factoryEnd) {
+        public ConverterTimeInterval(Property<TimeInterval> property, ExpressionFactory<U> factoryStart, ExpressionFactory<U> factoryEnd) {
             this.property = property;
             this.factoryStart = factoryStart;
             this.factoryEnd = factoryEnd;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             entity.setProperty(property, Utils.intervalFromTimes(
                     (Moment) input.get(factoryStart.get(table)),
                     (Moment) input.get(factoryEnd.get(table))));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             TimeInterval interval = entity.getProperty(property);
             EntityFactories.insertTimeInterval(insertFields, factoryStart.get(table), factoryEnd.get(table), interval);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             TimeInterval interval = entity.getProperty(property);
             EntityFactories.insertTimeInterval(updateFields, factoryStart.get(table), factoryEnd.get(table), interval);
             message.addField(property);
         }
     }
 
-    public static class ConverterTimeInstant<T> implements ConverterRecord<T> {
+    public static class ConverterTimeInstant<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property<TimeInstant> property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
 
-        public ConverterTimeInstant(Property<TimeInstant> property, ExpressionFactory<T> factory) {
+        public ConverterTimeInstant(Property<TimeInstant> property, ExpressionFactory<U> factory) {
             this.property = property;
             this.factory = factory;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             entity.setProperty(
                     property,
                     Utils.instantFromTime((Moment) input.get(factory.get(table))));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             TimeInstant instant = entity.getProperty(property);
             EntityFactories.insertTimeInstant(insertFields, factory.get(table), instant);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             TimeInstant instant = entity.getProperty(property);
             EntityFactories.insertTimeInstant(updateFields, factory.get(table), instant);
             message.addField(property);
         }
     }
 
-    public static class ConverterTimeValue<T> implements ConverterRecord<T> {
+    public static class ConverterTimeValue<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property<TimeValue> property;
-        private final ExpressionFactory<T> factoryStart;
-        private final ExpressionFactory<T> factoryEnd;
+        private final ExpressionFactory<U> factoryStart;
+        private final ExpressionFactory<U> factoryEnd;
 
-        public ConverterTimeValue(Property<TimeValue> property, ExpressionFactory<T> factoryStart, ExpressionFactory<T> factoryEnd) {
+        public ConverterTimeValue(Property<TimeValue> property, ExpressionFactory<U> factoryStart, ExpressionFactory<U> factoryEnd) {
             this.property = property;
             this.factoryStart = factoryStart;
             this.factoryEnd = factoryEnd;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             entity.setProperty(
                     property,
                     Utils.valueFromTimes(
@@ -641,31 +642,31 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             TimeValue value = entity.getProperty(property);
             EntityFactories.insertTimeValue(insertFields, factoryStart.get(table), factoryEnd.get(table), value);
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             TimeValue value = entity.getProperty(property);
             EntityFactories.insertTimeValue(updateFields, factoryStart.get(table), factoryEnd.get(table), value);
             message.addField(property);
         }
     }
 
-    public static class ConverterMap<T> implements ConverterRecord<T> {
+    public static class ConverterMap<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final Property property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
 
-        public ConverterMap(Property property, ExpressionFactory<T> factory) {
+        public ConverterMap(Property property, ExpressionFactory<U> factory) {
             this.property = property;
             this.factory = factory;
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             JsonValue data = Utils.getFieldJsonValue(input, factory.get(table));
             if (data == null) {
                 return;
@@ -675,23 +676,23 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             insertFields.put(factory.get(table), new JsonValue(entity.getProperty(property)));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             updateFields.put(factory.get(table), new JsonValue(entity.getProperty(property)));
             message.addField(property);
         }
     }
 
-    public static class ConverterEntity<T> implements ConverterRecord<T> {
+    public static class ConverterEntity<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         private final NavigationPropertyEntity property;
-        private final ExpressionFactory<T> factory;
+        private final ExpressionFactory<U> factory;
 
-        public ConverterEntity(NavigationPropertyEntity property, ExpressionFactory<T> factory) {
+        public ConverterEntity(NavigationPropertyEntity property, ExpressionFactory<U> factory) {
             this.property = property;
             this.factory = factory;
             if (!(property.getEntityType().getPrimaryKey() instanceof PkSingle)) {
@@ -700,7 +701,7 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             final Object rawId = getFieldOrNull(input, factory.get(table));
             if (rawId == null) {
                 return;
@@ -710,33 +711,33 @@ public class PropertyFieldRegistry<T extends StaMainTable<T>> {
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             Entity child = entity.getProperty(property);
             insertFields.put(factory.get(table), child.getPrimaryKeyValues().get(0));
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             Entity child = entity.getProperty(property);
             updateFields.put(factory.get(table), child.getPrimaryKeyValues().get(0));
             message.addField(property);
         }
     }
 
-    public static class ConverterEntitySet<T> implements ConverterRecord<T> {
+    public static class ConverterEntitySet<U extends StaMainTable<U>> implements ConverterRecord<U> {
 
         @Override
-        public void convert(T table, Record input, Entity entity, DataSize dataSize) {
+        public void convert(U table, Record input, Entity entity, DataSize dataSize) {
             // EntitySet properties are not fetched in this way
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> insertFields) {
+        public void convert(U table, Entity entity, Map<Field, Object> insertFields) {
             // EntitySet properties are not created in this way
         }
 
         @Override
-        public void convert(T table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
+        public void convert(U table, Entity entity, Map<Field, Object> updateFields, EntityChangedMessage message) {
             // EntitySet properties are not updated in this way
         }
     }
