@@ -7,6 +7,7 @@
 **Internal changes & Bugfixes**
 * Fixed #2072: Users are always anonymous when combining keycloak, finegrained auth and anonymous access.
 * Fixed #2073: Projects plugin has no default value for isPublic and restricted columns.
+* MariaDB: avoid use of distinctOn on MariaDb, as not supported.
 
 
 ## Release version 2.5.0
