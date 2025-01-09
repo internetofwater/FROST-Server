@@ -3,6 +3,7 @@
 ## Development version 2.6.0
 
 **New Features**
+* When using the Projects Plugin, generated Features now get the same restricted status and Projects as the Location they are generated from.
 
 **Internal changes & Bugfixes**
 * Fixed #2072: Users are always anonymous when combining keycloak, finegrained auth and anonymous access.
