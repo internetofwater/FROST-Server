@@ -10,6 +10,7 @@
 * Fixed #2073: Projects plugin has no default value for isPublic and restricted columns.
 * MariaDB: avoid use of distinctOn on MariaDb, as not supported.
 * Fixed exception in Projects plugin when fetching Locations.
+* Added tests for MQTT-Create and fine-grained authorisation.
 
 
 ## Release version 2.5.0
