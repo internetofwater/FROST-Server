@@ -44,6 +44,14 @@
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>jdbc-socket-factory-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>postgres-socket-factory</artifactId>
+        </dependency>
+        <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>Configurable</artifactId>
         </dependency>

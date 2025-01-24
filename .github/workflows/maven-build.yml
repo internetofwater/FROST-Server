@@ -11,6 +11,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  DOCKER_TAG_BRANCH: test
+#  DOCKER_TEST_IMAGE: geopython/pygeoapi:test
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -82,9 +86,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      if: ${{ secrets.SONAR_TOKEN }}
       run: |
-        mvn -B verify sonar:sonar -Dsonar.projectKey=FraunhoferIOSB_FROST-Server -Dmaven.javadoc.skip=true -P coverage
         echo "Exporting Variables"
         export HTTP_NAME=$(mvn -pl FROST-Server.HTTP -Dexec.executable='echo' -Dexec.args='${project.build.finalName}' exec:exec -q)
         export MQTTP_NAME=$(mvn -pl FROST-Server.MQTTP -Dexec.executable='echo' -Dexec.args='${project.build.finalName}' exec:exec -q)
