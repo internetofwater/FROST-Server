@@ -58,14 +58,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.google.cloud.sql</groupId>
-            <artifactId>jdbc-socket-factory-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud.sql</groupId>
-            <artifactId>postgres-socket-factory</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>

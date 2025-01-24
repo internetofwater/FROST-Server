@@ -123,6 +123,11 @@
                                     <artifactId>mariadb-java-client</artifactId>
                                     <version>${version.mariadb}</version>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.google.cloud.sql</groupId>
+                                    <artifactId>postgres-socket-factory</artifactId>
+                                    <version>${version.socketfactory}</version>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>

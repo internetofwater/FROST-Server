@@ -17,6 +17,8 @@
  */
 package de.fraunhofer.iosb.ilt.frostserver.persistence.pgjooq.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.fraunhofer.iosb.ilt.frostclient.settings.annotation.SensitiveValue;
 import de.fraunhofer.iosb.ilt.frostserver.settings.ConfigDefaults;
 import de.fraunhofer.iosb.ilt.frostserver.settings.Settings;
@@ -30,7 +32,6 @@ import java.util.function.Supplier;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -42,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for creating database connections.
+ * Utility class for creating database connections using HikariCP.
  */
 public class ConnectionUtils implements ConfigDefaults {
 
@@ -106,7 +107,7 @@ public class ConnectionUtils implements ConfigDefaults {
             DataSource source = EXISTING_POOLS.get(name);
             if (source == null) {
                 if (!settings.get(TAG_DB_URL, ConnectionUtils.class).isEmpty()) {
-                    source = setupBasicDataSource(settings);
+                    source = setupHikariDataSource(settings);
                 } else {
                     source = setupDataSource(settings);
                 }
@@ -116,22 +117,23 @@ public class ConnectionUtils implements ConfigDefaults {
         }
     }
 
-    private static DataSource setupBasicDataSource(Settings settings) {
-        LOGGER.info("Setting up BasicDataSource for database connections.");
+    private static DataSource setupHikariDataSource(Settings settings) {
+        LOGGER.info("Setting up HikariDataSource for database connections.");
         String driver = settings.get(TAG_DB_DRIVER, ConnectionUtils.class);
         if (driver.isEmpty()) {
             throw new IllegalArgumentException("Property '" + TAG_DB_DRIVER + "' must be non-empty");
         }
         try {
             Class.forName(driver);
-            BasicDataSource ds = new BasicDataSource();
-            ds.setUrl(settings.get(TAG_DB_URL, ConnectionUtils.class));
-            ds.setUsername(settings.get(TAG_DB_USERNAME, ConnectionUtils.class));
-            ds.setPassword(settings.get(TAG_DB_PASSWRD, ConnectionUtils.class));
-            ds.setMaxIdle(settings.getInt(TAG_DB_MAXIDLE, ds.getMaxIdle()));
-            ds.setMaxTotal(settings.getInt(TAG_DB_MAXCONN, ds.getMaxTotal()));
-            ds.setMinIdle(settings.getInt(TAG_DB_MINIDLE, ds.getMinIdle()));
-            return ds;
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(settings.get(TAG_DB_URL, ConnectionUtils.class));
+            config.setUsername(settings.get(TAG_DB_USERNAME, ConnectionUtils.class));
+            config.setPassword(settings.get(TAG_DB_PASSWRD, ConnectionUtils.class));
+            config.setMaximumPoolSize(settings.getInt(TAG_DB_MAXCONN, 10)); // Default 10
+            config.setMinimumIdle(settings.getInt(TAG_DB_MINIDLE, 2)); // Default 2
+            config.setMaxLifetime(1800000); // Default 30 minutes
+            config.setIdleTimeout(600000); // Default 10 minutes
+            return new HikariDataSource(config);
         } catch (ClassNotFoundException exc) {
             throw new IllegalArgumentException(exc);
         }
@@ -196,7 +198,7 @@ public class ConnectionUtils implements ConfigDefaults {
                 try {
                     connection = ConnectionUtils.getConnection(connectionName, settings);
                 } catch (SQLException ex) {
-                    LOGGER.error("Could not inizialize {}", getClass().getName(), ex);
+                    LOGGER.error("Could not initialize {}", getClass().getName(), ex);
                 }
             }
             return connection;
