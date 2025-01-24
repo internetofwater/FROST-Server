@@ -149,6 +149,7 @@
         <version.testcontainers>1.20.4</version.testcontainers>
         <version.testcontainers-keycloak>3.6.0</version.testcontainers-keycloak>
         <version.time4j>5.9.4</version.time4j>
+        <version.socketfactory>1.22.0</version.socketfactory>
     </properties>
 
     <dependencyManagement>
@@ -379,6 +380,16 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${version.testcontainers}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.cloud.sql</groupId>
+                <artifactId>postgres-socket-factory</artifactId>
+                <version>${version.socketfactory}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.cloud.sql</groupId>
+                <artifactId>jdbc-socket-factory-core</artifactId>
+                <version>${version.socketfactory}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

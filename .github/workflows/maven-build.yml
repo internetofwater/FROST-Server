@@ -165,7 +165,7 @@ jobs:
         build-args: |
           ARTIFACT_FILE=${{ env.HTTP_ARTIFACT }}
         tags: |
-          fraunhoferiosb/frost-server-http:${{ env.DOCKER_TAG_BRANCH }}
+          internetofwater/frost-server-http:${{ env.DOCKER_TAG_BRANCH }}
 
 
     - name: Build and push - MQTTP - Develop branch latest
@@ -178,8 +178,8 @@ jobs:
         build-args: |
           ARTIFACT_FILE=${{ env.MQTTP_ARTIFACT }}
         tags: |
-          fraunhoferiosb/frost-server:${{ env.DOCKER_TAG_BRANCH }}
-          fraunhoferiosb/frost-server-mqttp:${{ env.DOCKER_TAG_BRANCH }}
+          internetofwater/frost-server:${{ env.DOCKER_TAG_BRANCH }}
+          internetofwater/frost-server-mqttp:${{ env.DOCKER_TAG_BRANCH }}
 
 
     - name: Build and push - MQTT - Develop branch latest
@@ -192,5 +192,5 @@ jobs:
         build-args: |
           ARTIFACT_FILE=${{ env.MQTT_ARTIFACT }}
         tags: |
-          fraunhoferiosb/frost-server-mqtt:${{ env.DOCKER_TAG_BRANCH }}
+          internetofwater/frost-server-mqtt:${{ env.DOCKER_TAG_BRANCH }}
 
