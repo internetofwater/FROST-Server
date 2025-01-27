@@ -63,6 +63,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -122,11 +126,6 @@
                                     <groupId>org.mariadb.jdbc</groupId>
                                     <artifactId>mariadb-java-client</artifactId>
                                     <version>${version.mariadb}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.google.cloud.sql</groupId>
-                                    <artifactId>postgres-socket-factory</artifactId>
-                                    <version>${version.socketfactory}</version>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

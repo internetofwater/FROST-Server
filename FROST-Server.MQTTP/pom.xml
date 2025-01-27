@@ -133,6 +133,21 @@
                                     <artifactId>postgres-socket-factory</artifactId>
                                     <version>${version.socketfactory}</version>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.google.cloud.sql</groupId>
+                                    <artifactId>cloud-sql-connector-jdbc-core</artifactId>
+                                    <version>${version.socketfactory}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>jul-to-slf4j</artifactId>
+                                    <version>${version.slf4j-api}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <version>${version.slf4j-api}</version>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
