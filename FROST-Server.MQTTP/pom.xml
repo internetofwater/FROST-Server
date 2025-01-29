@@ -114,34 +114,9 @@
                             <silent>true</silent>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.postgresql</groupId>
-                                    <artifactId>postgresql</artifactId>
-                                    <version>${version.postgres}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.postgis</groupId>
-                                    <artifactId>postgis-jdbc</artifactId>
-                                    <version>${version.postgis}</version>
-                                </artifactItem>
-                                <artifactItem>
                                     <groupId>org.mariadb.jdbc</groupId>
                                     <artifactId>mariadb-java-client</artifactId>
                                     <version>${version.mariadb}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.google.cloud.sql</groupId>
-                                    <artifactId>postgres-socket-factory</artifactId>
-                                    <version>${version.socketfactory}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.slf4j</groupId>
-                                    <artifactId>jul-to-slf4j</artifactId>
-                                    <version>${version.slf4j-api}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.slf4j</groupId>
-                                    <artifactId>slf4j-api</artifactId>
-                                    <version>${version.slf4j-api}</version>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
