@@ -56,8 +56,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -112,16 +120,6 @@
                             <outputDirectory>${docker.dependencies.dir}</outputDirectory>
                             <silent>true</silent>
                             <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.postgresql</groupId>
-                                    <artifactId>postgresql</artifactId>
-                                    <version>${version.postgres}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>net.postgis</groupId>
-                                    <artifactId>postgis-jdbc</artifactId>
-                                    <version>${version.postgis}</version>
-                                </artifactItem>
                                 <artifactItem>
                                     <groupId>org.mariadb.jdbc</groupId>
                                     <artifactId>mariadb-java-client</artifactId>

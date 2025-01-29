@@ -45,10 +45,6 @@
         </dependency>
         <dependency>
             <groupId>com.google.cloud.sql</groupId>
-            <artifactId>cloud-sql-connector-jdbc-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud.sql</groupId>
             <artifactId>postgres-socket-factory</artifactId>
         </dependency>
         <dependency>
