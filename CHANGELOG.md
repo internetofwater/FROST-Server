@@ -11,6 +11,7 @@
 * MariaDB: avoid use of distinctOn on MariaDb, as not supported.
 * Fixed exception in Projects plugin when fetching Locations.
 * Added tests for MQTT-Create and fine-grained authorisation.
+* Fixed #2103: Moved postgres and postgis libs in Docker containers from `${CATALINA_HOME}/lib` to `${CATALINA_HOME}/webapps/FROST-Server/WEB-INF/lib`
 
 
 ## Release version 2.5.0
